@@ -21,6 +21,7 @@ const HomePage: React.FC = () => {
   const [expLocal, setExpLocal] = useState<string>('');
   const [expUTC, setExpUTC] = useState<string | null>(null);
   const [shortenedUrl, setShortenedUrl] = useState<string>('');
+  const [message, setMessage] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
 
   const handleUrlChange = (e: ChangeEvent<HTMLInputElement>) =>
@@ -40,7 +41,6 @@ const HomePage: React.FC = () => {
 
     if (localInput) {
       const utcDateString = new Date(localInput).toISOString();
-      console.log('utcDateString', utcDateString);
       setExpUTC(utcDateString);
     } else {
       setExpUTC(null);
@@ -72,7 +72,7 @@ const HomePage: React.FC = () => {
       });
       const data = await response.json();
       setShortenedUrl(data.shortenedUrl);
-      console.log('data.shortenedUrl', data.shortenedUrl);
+      setMessage(data.message);
     } catch (error) {
       console.error('Error shortening URL:', error);
     } finally {
@@ -180,6 +180,7 @@ const HomePage: React.FC = () => {
             </a>
           </div>
         )}
+        {message && <div className="mt-4 text-blue-600 ">{message}</div>}
       </div>
     </div>
   );
