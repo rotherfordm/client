@@ -11,7 +11,6 @@ interface UTMParams {
 const HomePage: React.FC = () => {
   const [url, setUrl] = useState<string>('');
   const [customSlug, setCustomSlug] = useState<string>('');
-  const [expiration, setExpiration] = useState<string>('');
   const [utmParams, setUtmParams] = useState<UTMParams>({
     source: '',
     medium: '',
@@ -19,6 +18,8 @@ const HomePage: React.FC = () => {
     term: '',
     content: '',
   });
+  const [expLocal, setExpLocal] = useState<string>('');
+  const [expUTC, setExpUTC] = useState<string | null>(null);
   const [shortenedUrl, setShortenedUrl] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -26,13 +27,28 @@ const HomePage: React.FC = () => {
     setUrl(e.target.value);
   const handleSlugChange = (e: ChangeEvent<HTMLInputElement>) =>
     setCustomSlug(e.target.value);
-  const handleExpirationChange = (e: ChangeEvent<HTMLInputElement>) =>
-    setExpiration(e.target.value);
 
   const getMinDateTime = () => {
     const now = new Date();
     now.setSeconds(0, 0); // remove seconds and milliseconds for compatibility
     return now.toISOString().slice(0, 16); // format as "YYYY-MM-DDTHH:MM"
+  };
+
+  const handleExpirationChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const localInput = e.target.value;
+    setExpLocal(localInput);
+
+    if (localInput) {
+      const localDate = new Date(localInput);
+      const utcDate = new Date(
+        localDate.getTime() - localDate.getTimezoneOffset() * 60000
+      );
+
+      setExpUTC(utcDate.toISOString());
+      console.log('utcDate.toISOString()', utcDate.toISOString());
+    } else {
+      setExpUTC(null);
+    }
   };
 
   const handleUtmChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -54,7 +70,7 @@ const HomePage: React.FC = () => {
         body: JSON.stringify({
           url,
           customSlug,
-          exp: expiration,
+          exp: expUTC,
           utm: utmParams,
         }),
       });
@@ -100,7 +116,7 @@ const HomePage: React.FC = () => {
             <label className="block text-gray-700">Expiration Date</label>
             <input
               type="datetime-local"
-              value={expiration}
+              value={expLocal}
               onChange={handleExpirationChange}
               min={getMinDateTime()}
               className="w-full p-2 border border-gray-300 rounded-md"
