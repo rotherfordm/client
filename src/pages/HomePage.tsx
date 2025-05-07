@@ -30,8 +30,8 @@ const HomePage: React.FC = () => {
 
   const getMinDateTime = () => {
     const now = new Date();
-    now.setSeconds(0, 0); // remove seconds and milliseconds for compatibility
-    return now.toISOString().slice(0, 16); // format as "YYYY-MM-DDTHH:MM"
+    now.setSeconds(0, 0);
+    return now.toISOString().slice(0, 16);
   };
 
   const handleExpirationChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -39,13 +39,9 @@ const HomePage: React.FC = () => {
     setExpLocal(localInput);
 
     if (localInput) {
-      const localDate = new Date(localInput);
-      const utcDate = new Date(
-        localDate.getTime() - localDate.getTimezoneOffset() * 60000
-      );
-
-      setExpUTC(utcDate.toISOString());
-      console.log('utcDate.toISOString()', utcDate.toISOString());
+      const utcDateString = new Date(localInput).toISOString();
+      console.log('utcDateString', utcDateString);
+      setExpUTC(utcDateString);
     } else {
       setExpUTC(null);
     }
